@@ -38,7 +38,12 @@ Built with **Java** and designed to meet banking-specific standards, this middle
    ```bash
    mvn install
    ```
-
+3. **Set up environment variables**:
+   - **Configure the database and other environment variables in application.properties
+4. **Run the application**:
+   ```bash
+   mvn spring-boot:run
+   ```
 
 
 ## Usage
