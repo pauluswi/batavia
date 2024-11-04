@@ -27,3 +27,14 @@ Built with **Java** and designed to meet banking-specific standards, this middle
 - **Java 11** or higher
 - **Maven** or **Gradle**
 - **Docker** (optional for containerized deployment)
+
+### Installation
+
+1. **Clone the repository**:
+   ```bash
+   git clone https://github.com/your-username/banking-middleware-service.git
+   ```
+2. **Install dependencies: Use Maven to install the required dependencies.**:
+   ```bash
+   mvn install
+   ```
