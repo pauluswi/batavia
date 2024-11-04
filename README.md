@@ -38,3 +38,18 @@ Built with **Java** and designed to meet banking-specific standards, this middle
    ```bash
    mvn install
    ```
+
+
+
+## Usage
+The middleware service exposes various endpoints for transaction processing, data retrieval, and more. Refer to the [API Documentation](./docs/api-documentation.md) for details on each endpoint.
+
+## Contributing
+We welcome contributions! Please see the [CONTRIBUTING.md](./CONTRIBUTING.md) for guidelines.
+
+## License
+This project is licensed under the MIT License. See the [LICENSE](./LICENSE) file for more details.
+
+## Contact
+For more information, questions, or collaboration opportunities, please reach out via GitHub Issues or contact me at [your-email@example.com](mailto:your-email@example.com).
+
