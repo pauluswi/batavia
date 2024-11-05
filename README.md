@@ -7,32 +7,33 @@ Built with **Java** and designed to meet banking-specific standards, this middle
 
 ## Features
 - **Transaction Processing**: Efficient and secure processing of various banking transactions.
-- **Data Transformation**: Supports data transformation and mapping across multiple formats (e.g., JSON, XML, ISO 8583).
+- **Data Transformation**: Supports data transformation and mapping across multiple formats (e.g., JSON, ISO 8583).
 - **API Management**: Provides RESTful and SOAP API endpoints for secure communication.
-- **Authentication and Authorization**: Ensures secure access through OAuth, JWT, or other banking-grade security mechanisms.
+- **Authentication and Authorization**: Ensures secure access through OAuth2, JWT, or other banking-grade security mechanisms.
 - **Logging and Monitoring**: Integrated with logging and monitoring tools for high visibility and transactional tracking.
 - **Error Handling**: Robust error handling with retries for failed transactions.
 
 ## Tech Stack
 - **Language**: Java
 - **Frameworks**: Spring Boot, Spring Security, Spring Data
-- **Protocols**: REST, SOAP, ISO 8583
-- **Database**: PostgreSQL (or any RDBMS of your choice)
-- **Deployment**: Docker, Kubernetes (optional)
+- **Protocols**: REST, ISO 8583
+- **Database**: PostgreSQL 
+- **Deployment**: Docker, Kubernetes 
 - **Other Tools**: OpenAPI/Swagger for API documentation, Prometheus, and Grafana for monitoring
 
 ## Getting Started
 
 ### Prerequisites
-- **Java 11** or higher
-- **Maven** or **Gradle**
+- **Java 17**
+- **Spring Boot 3.3.5**
+- **Maven**
 - **Docker** (optional for containerized deployment)
 
 ### Installation
 
 1. **Clone the repository**:
    ```bash
-   git clone https://github.com/your-username/banking-middleware-service.git
+   git clone https://github.com/pauluswi/batavia.git
    ```
 2. **Install dependencies: Use Maven to install the required dependencies.**:
    ```bash
