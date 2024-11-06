@@ -1,5 +1,12 @@
 # Banking Middleware Service
 
+[![Build Status](https://img.shields.io/github/actions/workflow/status/your-username/repo-name/build.yml)](https://github.com/your-username/repo-name/actions)
+[![Java Version](https://img.shields.io/badge/Java-17-blue)](https://www.oracle.com/java/)
+[![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.3.5-brightgreen)](https://spring.io/projects/spring-boot)
+[![License](https://img.shields.io/badge/license-MIT-green)](LICENSE)
+[![Coverage](https://img.shields.io/badge/coverage-90%25-yellowgreen)](https://your-code-coverage-url)
+
+
 ## Overview
 This repository hosts the codebase for a **Middleware Service for Banking Applications**. This service acts as a bridge between various banking systems, providing integration, data transformation, and transaction routing to ensure seamless interoperability between legacy and modern banking infrastructures.
 
