@@ -1,20 +1,20 @@
-# Banking Middleware Service
+# Batavia - Banking Middleware Service
 
-[![Build Status](https://img.shields.io/github/actions/workflow/status/your-username/repo-name/build.yml)](https://github.com/your-username/repo-name/actions)
+
 [![Java Version](https://img.shields.io/badge/Java-17-blue)](https://www.oracle.com/java/)
 [![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.3.5-brightgreen)](https://spring.io/projects/spring-boot)
 [![License](https://img.shields.io/badge/license-MIT-green)](LICENSE)
+
+[![Build Status](https://img.shields.io/github/actions/workflow/status/your-username/repo-name/build.yml)](https://github.com/your-username/repo-name/actions)
 [![Coverage](https://img.shields.io/badge/coverage-90%25-yellowgreen)](https://your-code-coverage-url)
 
 
 [![Docker Pulls](https://img.shields.io/docker/pulls/your-docker-username/your-image-name)](https://hub.docker.com/r/your-docker-username/your-image-name)
-[![Docker Image Version](https://img.shields.io/docker/v/your-docker-username/your-image-name/latest)](https://hub.docker.com/r/your-docker-username/your-image-name)
 [![Kubernetes Deployment](https://img.shields.io/badge/Kubernetes-Deployment-blue)](link-to-your-k8s-deployment-yaml)
-[![Kubernetes Version](https://img.shields.io/badge/Kubernetes-v1.20%2B-blue)](https://kubernetes.io/docs/setup/)
 
 
 ## Overview
-This repository hosts the codebase for a **Middleware Service for Banking Applications**. This service acts as a bridge between various banking systems, providing integration, data transformation, and transaction routing to ensure seamless interoperability between legacy and modern banking infrastructures.
+This Batavia repository hosts the codebase for a **Middleware Service for Banking Applications**. This service acts as a bridge between various banking systems, providing integration, data transformation, and transaction routing to ensure seamless interoperability between legacy and modern banking infrastructures.
 
 Built with **Java** and designed to meet banking-specific standards, this middleware solution aims to provide high availability, scalability, and security for financial transactions and data exchanges.
 
@@ -29,10 +29,13 @@ Built with **Java** and designed to meet banking-specific standards, this middle
 ## Tech Stack
 - **Language**: Java
 - **Frameworks**: Spring Boot, Spring Security, Spring Data
-- **Protocols**: REST, ISO 8583
+- **Protocols**: REST, ISO 8583, ISO 20022
 - **Database**: PostgreSQL 
-- **Deployment**: Docker, Kubernetes 
-- **Other Tools**: OpenAPI/Swagger for API documentation, Prometheus, and Grafana for monitoring
+- **Deployment**: Docker, Kubernetes
+
+## Inbound and Outbound
+
+Inbound JSON   -->   Middleware   -->   Outbound ISO8583 | ISO20022
 
 ## Getting Started
 
@@ -40,7 +43,7 @@ Built with **Java** and designed to meet banking-specific standards, this middle
 - **Java 17**
 - **Spring Boot 3.3.5**
 - **Maven**
-- **Docker** (optional for containerized deployment)
+- **Docker**
 
 ### Installation
 
