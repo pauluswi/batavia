@@ -5,7 +5,7 @@
 [![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.3.5-brightgreen)](https://spring.io/projects/spring-boot)
 [![License](https://img.shields.io/badge/license-MIT-green)](LICENSE)
 
-[![Build Status](https://img.shields.io/github/actions/workflow/status/your-username/repo-name/build.yml)](https://github.com/your-username/repo-name/actions)
+[![Build Status](https://img.shields.io/github/actions/workflow/status/pauluswi/batavia/build.yml)](https://github.com/pauluswi/batavia/actions)
 [![Coverage](https://img.shields.io/badge/coverage-90%25-yellowgreen)](https://your-code-coverage-url)
 
 
