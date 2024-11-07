@@ -14,14 +14,15 @@
 
 
 ## Overview
-This Batavia repository hosts the codebase for a **Middleware Service for Banking Applications**. This service acts as a bridge between various banking systems, providing integration, data transformation, and transaction routing to ensure seamless interoperability between legacy and modern banking infrastructures.
+This Batavia repository hosts the codebase for a **Middleware Service for Banking Applications**. 
+This service acts as a bridge between various banking systems, providing integration, data transformation, and transaction routing to ensure seamless interoperability between legacy and modern banking infrastructures.
 
 Built with **Java** and designed to meet banking-specific standards, this middleware solution aims to provide high availability, scalability, and security for financial transactions and data exchanges.
 
 ## Features
 - **Transaction Processing**: Efficient and secure processing of various banking transactions.
-- **Data Transformation**: Supports data transformation and mapping across multiple formats (e.g., JSON, ISO 8583).
-- **API Management**: Provides RESTful and SOAP API endpoints for secure communication.
+- **Data Transformation**: Supports data transformation and mapping across multiple formats (e.g., JSON, ISO 8583, ISO 20022).
+- **API Management**: Provides RESTful API endpoints for secure communication.
 - **Authentication and Authorization**: Ensures secure access through OAuth2, JWT, or other banking-grade security mechanisms.
 - **Logging and Monitoring**: Integrated with logging and monitoring tools for high visibility and transactional tracking.
 - **Error Handling**: Robust error handling with retries for failed transactions.
