@@ -9,7 +9,7 @@
 [![Coverage](https://img.shields.io/badge/coverage-90%25-yellowgreen)](https://your-code-coverage-url)
 
 
-[![Docker Pulls](https://img.shields.io/docker/pulls/your-docker-username/your-image-name)](https://hub.docker.com/r/your-docker-username/your-image-name)
+[![Docker Pulls](https://img.shields.io/docker/pulls/pswied/batavia)](https://hub.docker.com/r/pswied/batavia)
 [![Kubernetes Deployment](https://img.shields.io/badge/Kubernetes-Deployment-blue)](link-to-your-k8s-deployment-yaml)
 
 
