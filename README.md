@@ -9,10 +9,6 @@
 [![Coverage](https://img.shields.io/badge/coverage-90%25-yellowgreen)](https://your-code-coverage-url)
 
 
-[![Docker Pulls](https://img.shields.io/docker/pulls/pswied/batavia)](https://hub.docker.com/r/pswied/batavia)
-[![Kubernetes Deployment](https://img.shields.io/badge/Kubernetes-Deployment-blue)](link-to-your-k8s-deployment-yaml)
-
-
 ## Overview
 This Batavia repository hosts the codebase for a **Middleware Service for Banking Applications**. 
 This service acts as a bridge between various banking systems, providing integration, data transformation, and transaction routing to ensure seamless interoperability between legacy and modern banking infrastructures.
