@@ -32,7 +32,7 @@ Built with **Java** and designed to meet banking-specific standards, this middle
 
 ## Inbound and Outbound
 
-Inbound JSON   -->   Middleware   -->   Outbound ISO8583 | ISO20022
+- Inbound JSON   -->   Middleware   -->   Outbound ISO8583 | ISO20022
 
 ## Getting Started
 
