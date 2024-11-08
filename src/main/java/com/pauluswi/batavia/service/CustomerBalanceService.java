@@ -51,6 +51,8 @@ public class CustomerBalanceService {
         response.put("MTI", isoMsg.getMTI());
         response.put("responseCode", isoMsg.getString(39));
         response.put("balance", parseBalance(isoMsg.getString(54)));
+        response.put("bankAccountNumber", isoMsg.getString(102));
+        response.put("customerName", isoMsg.getString(103));
         return response;
     }
 

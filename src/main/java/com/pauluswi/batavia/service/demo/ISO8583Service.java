@@ -26,10 +26,12 @@ public class ISO8583Service {
         isoMsg.set(2, customerId); // Primary Account Number (PAN)
         isoMsg.set(3, "310000"); // Processing code for balance inquiry
         isoMsg.set(4, "000000000000"); // Transaction amount (zero for inquiry)
-        isoMsg.set(7, "1105221800"); // Transmission date & time
+        isoMsg.set(7, "1111241830"); // Transmission date & time
         isoMsg.set(11, "123456"); // System trace audit number (STAN)
         isoMsg.set(41, "12345678"); // Card acceptor terminal ID
         isoMsg.set(49, "360"); // Currency code (e.g., IDR for Indonesia)
+        isoMsg.set(102, "23411122"); // Bank Account Number
+        isoMsg.set(103, "Andi Setiadi"); // Customer Full Name
 
         // Log the request message
         logger.info("ISO 8583 Request Message: {}", isoMsgToString(isoMsg));
@@ -49,6 +51,8 @@ public class ISO8583Service {
         response.setMTI("0210");
         response.set(39, "00"); // Response code (00 for success)
         response.set(54, "000000150000"); // Mock balance (e.g., 1500.00)
+        response.set(102, "23411122"); // Bank Account Number
+        response.set(103, "Andi Setiadi"); // Customer Full Name
 
         // Log the response message
         logger.info("ISO 8583 Response Message: {}", isoMsgToString(response));
