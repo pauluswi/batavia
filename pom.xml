@@ -40,6 +40,12 @@
 			<artifactId>spring-boot-starter-test</artifactId>
 			<scope>test</scope>
 		</dependency>
+
+		<dependency>
+    		<groupId>org.jpos</groupId>
+    		<artifactId>jpos</artifactId>
+    		<version>2.1.4</version> <!-- Choose the appropriate version -->
+		</dependency>
 	</dependencies>
 
 	<build>
