@@ -6,9 +6,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.pauluswi.batavia.service.demo.ISO8583Service;
-
-import java.util.HashMap;
-import java.util.Map;
+import com.pauluswi.dto.BalanceInquiryRequestDTO;
+import com.pauluswi.dto.BalanceInquiryResponseDTO;
+import com.pauluswi.dto.BalanceDataDTO;
 
 @Service
 public class CustomerBalanceService {
@@ -22,42 +22,42 @@ public class CustomerBalanceService {
      * @param customerId The customer ID.
      * @return The customer balance response in JSON format.
      */
-    public Map<String, Object> getCustomerBalance(String customerId) {
+    public BalanceInquiryResponseDTO getCustomerBalance(BalanceInquiryRequestDTO requestDTO) {
         try {
             // Step 1: Create ISO 8583 request
-            ISOMsg isoRequest = iso8583Service.createBalanceInquiryRequest(customerId);
+            ISOMsg isoRequest = iso8583Service.createBalanceInquiryRequest(requestDTO.getBankAccountNumber(), requestDTO.getCustomerFullName());
 
             // Step 2: Simulate core system response
             ISOMsg isoResponse = iso8583Service.createBalanceInquiryResponse(isoRequest);
 
             // Step 3: Convert ISO 8583 response to JSON
-            return parseIsoResponseToJson(isoResponse);
+            return parseIsoResponseToDto(isoResponse);
 
         } catch (ISOException e) {
             e.printStackTrace();
-            return Map.of("error", "Failed to process ISO 8583 message");
+            return null;
         }
     }
 
     /**
-     * Parses the ISO 8583 response message into JSON format.
+     * Parses the ISO 8583 response message into JSON format using DTO.
      *
      * @param isoMsg The ISO message.
      * @return The JSON representation of the response.
      * @throws ISOException If there is an error parsing the message.
      */
-    private Map<String, Object> parseIsoResponseToJson(ISOMsg isoMsg) throws ISOException {
-        Map<String, Object> response = new HashMap<>();
-        response.put("MTI", isoMsg.getMTI());
-        response.put("responseCode", isoMsg.getString(39));
-        response.put("balance", parseBalance(isoMsg.getString(54)));
-        response.put("bankAccountNumber", isoMsg.getString(102));
-        response.put("customerName", isoMsg.getString(103));
-        return response;
-    }
+    private BalanceInquiryResponseDTO parseIsoResponseToDto(ISOMsg isoMsg) throws ISOException {
+        BalanceInquiryResponseDTO responseDTO = new BalanceInquiryResponseDTO();
+        responseDTO.setMTI(isoMsg.getMTI());
+        responseDTO.setResponseCode(isoMsg.getString(39));
 
-    private double parseBalance(String balanceField) {
-        return Double.parseDouble(balanceField);
+        BalanceDataDTO dataDTO = new BalanceDataDTO();
+        dataDTO.setBankAccountNumber(isoMsg.getString(102));
+        dataDTO.setCustomerFullName(isoMsg.getString(103));
+        dataDTO.setBalance(Double.parseDouble(isoMsg.getString(54)));
+
+        responseDTO.setData(dataDTO);
+        return responseDTO;
     }
 }
 
