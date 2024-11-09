@@ -25,7 +25,7 @@ Built with **Java** and designed to meet banking-specific standards, this middle
 
 ## Tech Stack
 - **Language**: Java
-- **Frameworks**: Spring Boot, Spring Security, Spring Data
+- **Frameworks**: Spring Boot, Spring Security
 - **Protocols**: REST, ISO 8583, ISO 20022
 - **Database**: PostgreSQL 
 - **Deployment**: Docker, Kubernetes
