@@ -7,6 +7,8 @@
 
 [![Build Java CI with Maven](https://github.com/pauluswi/batavia/actions/workflows/maven.yml/badge.svg?branch=main)](https://github.com/pauluswi/batavia/actions/workflows/maven.yml)
 [![Coverage](https://img.shields.io/badge/coverage-90%25-yellowgreen)](https://your-code-coverage-url)
+![Coverage](https://codecov.io/gh/pauluswi/batavia/branch/main/graph/badge.svg)
+
 
 
 ## Overview
