@@ -7,8 +7,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class ISO20022Service {
 
-    private static final Logger logger = LoggerFactory.getLogger(ISO8583Service.class);
-
+    private static final Logger logger = LoggerFactory.getLogger(ISO20022Service.class);
 
     public String buildBalanceInquiryRequest(String bankAccountNumber, String customerFullName) {
         // Construct a simple ISO 20022-like XML message for balance inquiry
@@ -27,7 +26,6 @@ public class ISO20022Service {
         logger.info("ISO 20022 Request Message: {}", requestData);
 
         return requestData;
-
     }
 
     public String simulateBalanceInquiryResponse(String requestXml) {

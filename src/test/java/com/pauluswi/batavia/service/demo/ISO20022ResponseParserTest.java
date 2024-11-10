@@ -4,7 +4,7 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
-public class ISO20022ResponseParserTests {
+public class ISO20022ResponseParserTest {
 
     private final String sampleXmlResponse = """
             <Document>
