@@ -11,7 +11,7 @@ import com.pauluswi.dto.BalanceInquiryResponseDTO;
 import com.pauluswi.dto.BalanceDataDTO;
 
 @Service
-public class CustomerBalanceService {
+public class CustomerBalance8583Service {
     
     @Autowired
     private ISO8583Service iso8583Service;
