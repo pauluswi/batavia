@@ -36,7 +36,7 @@ public class ISO20022Service {
                 + "<Document xmlns=\"urn:iso:std:iso:20022:tech:xsd:pain.001.001.03\">"
                 + "<CstmrCdtTrfInitn>"
                 + "<GrpHdr><MsgId>msg123456</MsgId><CreDtTm>2024-01-01T12:00:00</CreDtTm></GrpHdr>"
-                + "<PmtInf><DbtrAcct><Id><Othr><Id>123456</Id></Othr></Id></DbtrAcct>"
+                + "<PmtInf><DbtrAcct><Id><Othr><Id>123456</Id></Othr></Id></DbtrAcct></PmtInf>"
                 + "<Bal><Amt Ccy=\"USD\">1500.00</Amt></Bal>"
                 + "<AcctInf><CIF>111</CIF><Name>Andi Lukito</Name></AcctInf>"
                 + "</CstmrCdtTrfInitn>"

@@ -3,6 +3,7 @@ package com.pauluswi.batavia.service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.pauluswi.batavia.service.demo.ISO20022ResponseParser;
 import com.pauluswi.batavia.service.demo.ISO20022Service;
 import com.pauluswi.dto.BalanceDataDTO;
 import com.pauluswi.dto.BalanceInquiryRequestDTO;
@@ -35,9 +36,10 @@ public class CustomerBalance20022Service {
         responseDTO.setMTI("msg123456");
 
         BalanceDataDTO dataDTO = new BalanceDataDTO();
-        dataDTO.setBankAccountNumber("123456");
-        dataDTO.setCustomerFullName("Andi Lukito");
-        dataDTO.setBalance(1500.00);
+    //    dataDTO.setBankAccountNumber("123456");
+        dataDTO.setBankAccountNumber(ISO20022ResponseParser.getBankAccountNumber(iso20022Response));
+        dataDTO.setCustomerFullName(ISO20022ResponseParser.getBankAccountNumber(iso20022Response));
+        dataDTO.setBalance(Double.parseDouble(ISO20022ResponseParser.getBalance(iso20022Response)));
 
         responseDTO.setData(dataDTO);
         return responseDTO;
