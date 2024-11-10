@@ -36,7 +36,6 @@ public class CustomerBalance20022Service {
         responseDTO.setMTI("msg123456");
 
         BalanceDataDTO dataDTO = new BalanceDataDTO();
-    //    dataDTO.setBankAccountNumber("123456");
         dataDTO.setBankAccountNumber(ISO20022ResponseParser.getBankAccountNumber(iso20022Response));
         dataDTO.setCustomerFullName(ISO20022ResponseParser.getBankAccountNumber(iso20022Response));
         dataDTO.setBalance(Double.parseDouble(ISO20022ResponseParser.getBalance(iso20022Response)));
