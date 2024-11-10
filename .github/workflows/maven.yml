@@ -32,6 +32,12 @@ jobs:
       with:
         files: ./target/site/jacoco/jacoco.xml
         flags: unittests
+    - name: Run tests
+      run: npx jest --coverage
+    - name: Upload results to Codecov
+      uses: codecov/codecov-action@v4
+      with:
+        token: ${{ secrets.CODECOV_TOKEN }}
     - name: Build with Maven
       run: mvn -B package --file pom.xml
 
