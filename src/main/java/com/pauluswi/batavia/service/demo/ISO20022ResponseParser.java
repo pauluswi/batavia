@@ -18,7 +18,7 @@ public class ISO20022ResponseParser {
         return extractValueFromXml(xmlResponse, "//*[local-name()='Amt']");
     }
 
-    public static String getCustomerName(String xmlResponse) {
+    public static String getCustomerFullName(String xmlResponse) {
         return extractValueFromXml(xmlResponse, "//*[local-name()='Name']");
     }
 
