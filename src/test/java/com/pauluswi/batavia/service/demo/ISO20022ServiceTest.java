@@ -31,14 +31,14 @@ public class ISO20022ServiceTest {
     @Test
     public void testBuildBalanceInquiryRequest() {
         String bankAccountNumber = "123456789";
-        String customerFullName = "John Doe";
+        String customerFullName = "Ahmad Subarjo";
 
         String expectedXml = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>"
                 + "<Document xmlns=\"urn:iso:std:iso:20022:tech:xsd:pain.001.001.03\">"
                 + "<CstmrCdtTrfInitn>"
                 + "<GrpHdr><MsgId>msg123456</MsgId><CreDtTm>2024-01-01T12:00:00</CreDtTm></GrpHdr>"
                 + "<PmtInf>"
-                + "<Dbtr><Nm>John Doe</Nm></Dbtr>"
+                + "<Dbtr><Nm>Ahmad Subarjo</Nm></Dbtr>"
                 + "<DbtrAcct><Id><Othr><Id>123456789</Id></Othr></Id></DbtrAcct>"
                 + "</PmtInf>"
                 + "</CstmrCdtTrfInitn>"

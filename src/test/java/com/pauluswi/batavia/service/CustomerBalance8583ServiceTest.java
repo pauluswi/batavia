@@ -34,22 +34,22 @@ public class CustomerBalance8583ServiceTest {
         // Arrange
         BalanceInquiryRequestDTO requestDTO = new BalanceInquiryRequestDTO();
         requestDTO.setBankAccountNumber("1234567890");
-        requestDTO.setCustomerFullName("John Doe");
+        requestDTO.setCustomerFullName("Ahmad Subarjo");
 
         ISOMsg isoRequest = new ISOMsg();
         isoRequest.setMTI("0200");
         isoRequest.set(102, "1234567890");
-        isoRequest.set(103, "John Doe");
+        isoRequest.set(103, "Ahmad Subarjo");
 
         ISOMsg isoResponse = new ISOMsg();
         isoResponse.setMTI("0210");
         isoResponse.set(39, "00");
         isoResponse.set(102, "1234567890");
-        isoResponse.set(103, "John Doe");
+        isoResponse.set(103, "Ahmad Subarjo");
         isoResponse.set(54, "1500.00");
 
         // Mock the ISO8583Service methods
-        when(iso8583Service.createBalanceInquiryRequest("1234567890", "John Doe")).thenReturn(isoRequest);
+        when(iso8583Service.createBalanceInquiryRequest("1234567890", "Ahmad Subarjo")).thenReturn(isoRequest);
         when(iso8583Service.createBalanceInquiryResponse(isoRequest)).thenReturn(isoResponse);
 
         // Act
@@ -62,7 +62,7 @@ public class CustomerBalance8583ServiceTest {
 
         BalanceDataDTO dataDTO = responseDTO.getData();
         assertEquals("1234567890", dataDTO.getBankAccountNumber());
-        assertEquals("John Doe", dataDTO.getCustomerFullName());
+        assertEquals("Ahmad Subarjo", dataDTO.getCustomerFullName());
         assertEquals(1500.00, dataDTO.getBalance());
     }
 }

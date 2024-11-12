@@ -34,11 +34,11 @@ public class Customer20022ControllerTest {
         // Arrange
         BalanceInquiryRequestDTO requestDTO = new BalanceInquiryRequestDTO();
         requestDTO.setBankAccountNumber("1234567890");
-        requestDTO.setCustomerFullName("John Doe");
+        requestDTO.setCustomerFullName("Ahmad Subarjo");
 
         BalanceDataDTO dataDTO = new BalanceDataDTO();
         dataDTO.setBankAccountNumber("1234567890");
-        dataDTO.setCustomerFullName("John Doe");
+        dataDTO.setCustomerFullName("Ahmad Subarjo");
         dataDTO.setBalance(1500.00);
 
         BalanceInquiryResponseDTO responseDTO = new BalanceInquiryResponseDTO();
@@ -57,7 +57,7 @@ public class Customer20022ControllerTest {
                 .andExpect(jsonPath("$.responseCode").value("00"))
                 .andExpect(jsonPath("$.mti").value("msg123456"))
                 .andExpect(jsonPath("$.data.bankAccountNumber").value("1234567890"))
-                .andExpect(jsonPath("$.data.customerFullName").value("John Doe"))
+                .andExpect(jsonPath("$.data.customerFullName").value("Ahmad Subarjo"))
                 .andExpect(jsonPath("$.data.balance").value(1500.00));
     }
 }
