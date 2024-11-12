@@ -3,11 +3,10 @@
 
 [![Java Version](https://img.shields.io/badge/Java-17-blue)](https://www.oracle.com/java/)
 [![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.3.5-brightgreen)](https://spring.io/projects/spring-boot)
-[![License](https://img.shields.io/badge/license-MIT-green)](LICENSE)
+
 
 [![Build Java CI with Maven](https://github.com/pauluswi/batavia/actions/workflows/maven.yml/badge.svg?branch=main)](https://github.com/pauluswi/batavia/actions/workflows/maven.yml)
-[![Coverage](https://img.shields.io/badge/coverage-90%25-yellowgreen)](https://your-code-coverage-url)
-![Coverage](https://codecov.io/gh/pauluswi/batavia/branch/main/graph/badge.svg)
+[![License](https://img.shields.io/badge/license-MIT-green)](LICENSE)
 
 
 
