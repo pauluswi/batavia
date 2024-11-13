@@ -26,10 +26,6 @@ This service acts as a bridge between various banking systems, providing integra
 - **Frameworks**: Spring Boot
 - **Protocols**: REST, ISO 8583, ISO 20022
 
-## Inbound and Outbound
-
-- Inbound JSON   -->   Middleware   -->   Outbound ISO8583 | ISO20022
-
 ## Getting Started
 
 ### Prerequisites
@@ -53,6 +49,39 @@ This service acts as a bridge between various banking systems, providing integra
 4. **Run the application**:
    ```bash
    mvn spring-boot:run
+   ```
+
+## Inbound and Outbound
+
+- Inbound JSON   -->   Middleware   -->   Outbound ISO8583 | ISO20022
+
+## API
+
+1. **POST Customer Balance on ISO 8583 Format**:
+
+   **Endpoint**: `/api/8583/customer/balance`
+
+   **Request Body:**
+
+   ```json
+   {
+     "bankAccountNumber": "123456",
+     "customerFullName": "Andi Lukito"
+   }
+   ```
+
+   **Response Body:**
+
+   ```json
+   {
+     "responseCode": "00",
+     "mti": "0210",
+     "data": {
+       "bankAccountNumber": "123456",
+       "customerFullName": "Andi Lukito",
+       "balance": 150000
+     }
+   }
    ```
 
 ## License
