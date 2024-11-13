@@ -3,11 +3,11 @@ package com.pauluswi.batavia.service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.pauluswi.batavia.dto.BalanceDataDTO;
+import com.pauluswi.batavia.dto.BalanceInquiryRequestDTO;
+import com.pauluswi.batavia.dto.BalanceInquiryResponseDTO;
 import com.pauluswi.batavia.service.demo.ISO20022ResponseParser;
 import com.pauluswi.batavia.service.demo.ISO20022Service;
-import com.pauluswi.dto.BalanceDataDTO;
-import com.pauluswi.dto.BalanceInquiryRequestDTO;
-import com.pauluswi.dto.BalanceInquiryResponseDTO;
 
 @Service
 public class CustomerBalance20022Service {

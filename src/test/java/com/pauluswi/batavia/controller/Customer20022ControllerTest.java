@@ -1,9 +1,10 @@
 package com.pauluswi.batavia.controller;
 
+import com.pauluswi.batavia.dto.BalanceDataDTO;
+import com.pauluswi.batavia.dto.BalanceInquiryRequestDTO;
+import com.pauluswi.batavia.dto.BalanceInquiryResponseDTO;
 import com.pauluswi.batavia.service.CustomerBalance20022Service;
-import com.pauluswi.dto.BalanceInquiryRequestDTO;
-import com.pauluswi.dto.BalanceInquiryResponseDTO;
-import com.pauluswi.dto.BalanceDataDTO;
+
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;

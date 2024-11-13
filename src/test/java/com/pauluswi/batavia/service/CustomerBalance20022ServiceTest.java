@@ -1,10 +1,11 @@
 package com.pauluswi.batavia.service;
 
+import com.pauluswi.batavia.dto.BalanceDataDTO;
+import com.pauluswi.batavia.dto.BalanceInquiryRequestDTO;
+import com.pauluswi.batavia.dto.BalanceInquiryResponseDTO;
 import com.pauluswi.batavia.service.demo.ISO20022ResponseParser;
 import com.pauluswi.batavia.service.demo.ISO20022Service;
-import com.pauluswi.dto.BalanceDataDTO;
-import com.pauluswi.dto.BalanceInquiryRequestDTO;
-import com.pauluswi.dto.BalanceInquiryResponseDTO;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;

@@ -1,7 +1,8 @@
 package com.pauluswi.batavia.dto;
 
 import org.junit.jupiter.api.Test;
-import com.pauluswi.dto.BalanceDataDTO;
+
+import com.pauluswi.batavia.dto.BalanceDataDTO;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;

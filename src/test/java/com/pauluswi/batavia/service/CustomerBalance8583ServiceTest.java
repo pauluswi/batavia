@@ -1,9 +1,10 @@
 package com.pauluswi.batavia.service;
 
+import com.pauluswi.batavia.dto.BalanceDataDTO;
+import com.pauluswi.batavia.dto.BalanceInquiryRequestDTO;
+import com.pauluswi.batavia.dto.BalanceInquiryResponseDTO;
 import com.pauluswi.batavia.service.demo.ISO8583Service;
-import com.pauluswi.dto.BalanceDataDTO;
-import com.pauluswi.dto.BalanceInquiryRequestDTO;
-import com.pauluswi.dto.BalanceInquiryResponseDTO;
+
 import org.jpos.iso.ISOException;
 import org.jpos.iso.ISOMsg;
 import org.junit.jupiter.api.BeforeEach;

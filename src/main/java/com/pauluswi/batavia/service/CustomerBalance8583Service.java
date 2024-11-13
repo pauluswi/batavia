@@ -5,10 +5,10 @@ import org.jpos.iso.ISOMsg;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.pauluswi.batavia.dto.BalanceDataDTO;
+import com.pauluswi.batavia.dto.BalanceInquiryRequestDTO;
+import com.pauluswi.batavia.dto.BalanceInquiryResponseDTO;
 import com.pauluswi.batavia.service.demo.ISO8583Service;
-import com.pauluswi.dto.BalanceInquiryRequestDTO;
-import com.pauluswi.dto.BalanceInquiryResponseDTO;
-import com.pauluswi.dto.BalanceDataDTO;
 
 @Service
 public class CustomerBalance8583Service {

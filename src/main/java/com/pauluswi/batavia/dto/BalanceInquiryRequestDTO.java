@@ -1,10 +1,9 @@
-package com.pauluswi.dto;
+package com.pauluswi.batavia.dto;
 
 import lombok.Data;
 
 @Data
-public class BalanceDataDTO {
+public class BalanceInquiryRequestDTO {
     private String bankAccountNumber;
     private String customerFullName;
-    private double balance;
 }
