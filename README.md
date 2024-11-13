@@ -95,6 +95,44 @@ This service acts as a bridge between various banking systems, providing integra
      ISO 8583 Response Message: MTI: 0210, Field 3: 310000, Field 4: 000000000000, Field 7: 1111241830, Field 11: 123456, Field 39: 00, Field 
      41: 12345678, Field 49: 360, Field 54: 000000150000, Field 102: 123456, Field 103: Andi Lukito, 
    ```
+
+2. **POST Customer Balance on ISO 20022 Format**:
+
+   **Endpoint**: `/api/20022/customer/balance`
+
+   **Request Body:**
+
+   ```json
+   {
+     "bankAccountNumber": "123456",
+     "customerFullName": "Andi Lukito"
+   }
+   ```
+
+   **Response Body:**
+
+   ```json
+   {
+     "responseCode": "00",
+     "mti": "0210",
+     "data": {
+       "bankAccountNumber": "123456",
+       "customerFullName": "Andi Lukito",
+       "balance": 150000
+     }
+   }
+   ```
+
+   **ISO 20022 Request Message**:
+   ```bash
+      ISO 20022 Request Message: <?xml version="1.0" encoding="UTF-8"?><Document xmlns="urn:iso:std:iso:20022:tech:xsd:pain.001.001.03"><CstmrCdtTrfInitn><GrpHdr><MsgId>msg123456</MsgId><CreDtTm>2024-01-01T12:00:00</CreDtTm></GrpHdr><PmtInf><Dbtr><Nm>Andi Lukito</Nm></Dbtr><DbtrAcct><Id><Othr><Id>123456</Id></Othr></Id></DbtrAcct></PmtInf></CstmrCdtTrfInitn></Document> 
+   ```
+
+   **ISO 20022 Response Message**:
+   ```bash
+     ISO 20022 Response Message: <?xml version="1.0" encoding="UTF-8"?><Document xmlns="urn:iso:std:iso:20022:tech:xsd:pain.001.001.03"><CstmrCdtTrfInitn><GrpHdr><MsgId>msg123456</MsgId><CreDtTm>2024-01-01T12:00:00</CreDtTm></GrpHdr><PmtInf><DbtrAcct><Id><Othr><Id>123456</Id></Othr></Id></DbtrAcct></PmtInf><Bal><Amt Ccy="USD">1500.00</Amt></Bal><AcctInf><CIF>111</CIF><Name>Andi Lukito</Name></AcctInf></CstmrCdtTrfInitn></Document>
+   ```
+
 ## License
 This project is licensed under the MIT License. See the [LICENSE](./LICENSE) file for more details.
 
