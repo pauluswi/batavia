@@ -84,6 +84,17 @@ This service acts as a bridge between various banking systems, providing integra
    }
    ```
 
+   **ISO 8583 Request Message**:
+   ```bash
+      ISO 8583 Request Message: MTI: 0200, Field 3: 310000, Field 4: 000000000000, Field 7: 1111241830, Field 11: 123456, Field 41: 12345678, 
+      Field 49: 360, Field 102: 123456, Field 103: Andi Lukito, 
+   ```
+
+   **ISO 8583 Response Message**:
+   ```bash
+     ISO 8583 Response Message: MTI: 0210, Field 3: 310000, Field 4: 000000000000, Field 7: 1111241830, Field 11: 123456, Field 39: 00, Field 
+     41: 12345678, Field 49: 360, Field 54: 000000150000, Field 102: 123456, Field 103: Andi Lukito, 
+   ```
 ## License
 This project is licensed under the MIT License. See the [LICENSE](./LICENSE) file for more details.
 
