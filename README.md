@@ -18,13 +18,14 @@ This service acts as a bridge between various banking systems, providing integra
 - **Transaction Processing**: Efficient and secure processing of various banking transactions.
 - **Data Transformation**: Supports data transformation and mapping across multiple formats (e.g., JSON, ISO 8583, ISO 20022).
 - **API Management**: Provides RESTful API endpoints for secure communication.
-- **Logging and Monitoring**: Integrated with logging and monitoring tools for high visibility and transactional tracking.
-- **Error Handling**: Robust error handling with retries for failed transactions.
+- **Logging**: Integrated with logging for high visibility and transactional tracking.
 
 ## Tech Stack
 - **Language**: Java
 - **Frameworks**: Spring Boot
 - **Protocols**: REST, ISO 8583, ISO 20022
+- **Libraries**: jpos for iso8583 parser and javax for iso20022 parser
+- **Unit Test**: junit, mockito and jacoco
 
 ## Getting Started
 
