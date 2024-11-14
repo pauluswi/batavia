@@ -11,7 +11,7 @@
 
 
 ## Overview
-This Batavia repository hosts the codebase for a **Middleware Service for Banking Applications**. 
+This Batavia repository hosts the codebase for service adapater as part of **Middleware Service for Banking Applications**. 
 This service acts as a bridge between various banking systems, providing integration and data transformation to ensure seamless interoperability between legacy and modern banking infrastructures.
 
 ## Features
