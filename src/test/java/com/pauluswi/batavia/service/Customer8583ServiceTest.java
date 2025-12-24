@@ -1,8 +1,8 @@
 package com.pauluswi.batavia.service;
 
 import com.pauluswi.batavia.dto.BalanceDataDTO;
-import com.pauluswi.batavia.dto.BalanceInquiryRequestDTO;
-import com.pauluswi.batavia.dto.BalanceInquiryResponseDTO;
+import com.pauluswi.batavia.dto.CustomerBalanceRequestDTO;
+import com.pauluswi.batavia.dto.CustomerBalanceResponseDTO;
 import com.pauluswi.batavia.service.demo.ISO8583Service;
 
 import org.jpos.iso.ISOException;
@@ -17,13 +17,13 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.Mockito.when;
 
-public class CustomerBalance8583ServiceTest {
+public class Customer8583ServiceTest {
 
     @Mock
     private ISO8583Service iso8583Service;
 
     @InjectMocks
-    private CustomerBalance8583Service customerBalanceService;
+    private Customer8583Service customerBalanceService;
 
     @BeforeEach
     public void setUp() {
@@ -33,7 +33,7 @@ public class CustomerBalance8583ServiceTest {
     @Test
     public void testGetCustomerBalance() throws ISOException {
         // Arrange
-        BalanceInquiryRequestDTO requestDTO = new BalanceInquiryRequestDTO();
+        CustomerBalanceRequestDTO requestDTO = new CustomerBalanceRequestDTO();
         requestDTO.setBankAccountNumber("1234567890");
         requestDTO.setCustomerFullName("Ahmad Subarjo");
 
@@ -54,7 +54,7 @@ public class CustomerBalance8583ServiceTest {
         when(iso8583Service.createBalanceInquiryResponse(isoRequest)).thenReturn(isoResponse);
 
         // Act
-        BalanceInquiryResponseDTO responseDTO = customerBalanceService.getCustomerBalance(requestDTO);
+        CustomerBalanceResponseDTO responseDTO = customerBalanceService.getCustomerBalance(requestDTO);
 
         // Assert
         assertNotNull(responseDTO);

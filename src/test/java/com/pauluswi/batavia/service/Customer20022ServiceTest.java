@@ -1,8 +1,8 @@
 package com.pauluswi.batavia.service;
 
 import com.pauluswi.batavia.dto.BalanceDataDTO;
-import com.pauluswi.batavia.dto.BalanceInquiryRequestDTO;
-import com.pauluswi.batavia.dto.BalanceInquiryResponseDTO;
+import com.pauluswi.batavia.dto.CustomerBalanceRequestDTO;
+import com.pauluswi.batavia.dto.CustomerBalanceResponseDTO;
 import com.pauluswi.batavia.service.demo.ISO20022ResponseParser;
 import com.pauluswi.batavia.service.demo.ISO20022Service;
 
@@ -16,13 +16,13 @@ import org.mockito.MockitoAnnotations;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.*;
 
-public class CustomerBalance20022ServiceTest {
+public class Customer20022ServiceTest {
 
     @Mock
     private ISO20022Service iso20022Service;
 
     @InjectMocks
-    private CustomerBalance20022Service customerBalanceService;
+    private Customer20022Service customerBalanceService;
 
     @BeforeEach
     public void setUp() {
@@ -32,7 +32,7 @@ public class CustomerBalance20022ServiceTest {
     @Test
     public void testGetCustomerBalance() {
         // Arrange
-        BalanceInquiryRequestDTO requestDTO = new BalanceInquiryRequestDTO();
+        CustomerBalanceRequestDTO requestDTO = new CustomerBalanceRequestDTO();
         requestDTO.setBankAccountNumber("1234567890");
         requestDTO.setCustomerFullName("Ahmad Subarjo");
 
@@ -50,7 +50,7 @@ public class CustomerBalance20022ServiceTest {
             mockedParser.when(() -> ISO20022ResponseParser.getBalance(iso20022Response)).thenReturn("1500.00");
 
             // Act
-            BalanceInquiryResponseDTO responseDTO = customerBalanceService.getCustomerBalance(requestDTO);
+            CustomerBalanceResponseDTO responseDTO = customerBalanceService.getCustomerBalance(requestDTO);
 
             // Assert
             assertEquals("00", responseDTO.getResponseCode());
