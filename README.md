@@ -16,6 +16,23 @@ This Batavia repository hosts the codebase for a service adapter as part of a **
 - **RESTful API**: Provides clear and secure RESTful API endpoints for all operations.
 - **Comprehensive Logging**: Integrated with SLF4J for high visibility and transactional tracking.
 
+## High-Level Architecture
+
+    Client (Mobile / Channel)
+      |
+      v
+    REST API Gateway (JSON)
+      |
+      v
+    Middleware Core
+    - Validation
+    - Idempotency
+    - Routing
+      |
+      +--> ISO8583 Adapter → Switch / Core Banking
+      |
+      +--> ISO20022 Adapter → Payment Engine
+
 ## Tech Stack
 - **Language**: Java 17
 - **Framework**: Spring Boot 3.3.5
@@ -97,8 +114,7 @@ Processes a balance inquiry by transforming the JSON request into an ISO 20022 X
 - **Endpoint**: `POST /api/20022/customer/balance`
 - **Headers**:
   - `Content-Type: application/json`
-  - `Idempotency-Key: <unique-request-id>` (e.g., `uuid-5678-efgh`)
-
+  
 - **Request Body**:
   ```json
   {
@@ -166,6 +182,11 @@ The following table lists the common response codes returned by the API:
 | `94` | Duplicate Transaction  | A request with the same `Idempotency-Key` has already been processed.       |
 | `96` | System Error           | An unexpected internal error occurred. Check logs for more details.         |
 
+## ⚠️ Disclaimer
+
+- This project is a portfolio showcase only.
+- It does not represent any real bank system or proprietary implementation.
+- Business rules and data structures are simplified and anonymized to respect NDA obligations.
 
 ## License
 This project is licensed under the MIT License. See the [LICENSE](./LICENSE) file for more details.
