@@ -1,5 +1,6 @@
 package com.pauluswi.batavia.service;
 
+import com.pauluswi.batavia.util.DataMaskingUtil;
 import org.jpos.iso.ISOException;
 import org.jpos.iso.ISOMsg;
 import org.slf4j.Logger;
@@ -31,7 +32,7 @@ public class Customer8583Service {
      */
     @Retryable(value = {ISOException.class}, maxAttempts = 3, backoff = @Backoff(delay = 1000))
     public CustomerBalanceResponseDTO getCustomerBalance(CustomerBalanceRequestDTO requestDTO) {
-        logger.info("Processing balance inquiry for account: {}", requestDTO.getBankAccountNumber());
+        logger.info("Processing balance inquiry for account: {}", DataMaskingUtil.mask(requestDTO.getBankAccountNumber()));
         try {
             // Step 1: Create ISO 8583 request
             ISOMsg isoRequest = iso8583Service.createBalanceInquiryRequest(requestDTO.getBankAccountNumber(), requestDTO.getCustomerFullName());

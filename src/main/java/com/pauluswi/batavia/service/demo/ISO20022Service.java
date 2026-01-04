@@ -1,5 +1,6 @@
 package com.pauluswi.batavia.service.demo;
 
+import com.pauluswi.batavia.util.DataMaskingUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -22,8 +23,8 @@ public class ISO20022Service {
                 + "</CstmrCdtTrfInitn>"
                 + "</Document>";
 
-        // Log the request message
-        logger.info("ISO 20022 Request Message: {}", requestData);
+        // Log the request message with masking
+        logger.info("ISO 20022 Request Message: {}", DataMaskingUtil.maskIso20022(requestData));
 
         return requestData;
     }
@@ -40,8 +41,8 @@ public class ISO20022Service {
                 + "</CstmrCdtTrfInitn>"
                 + "</Document>";
 
-        // Log the request message
-        logger.info("ISO 20022 Response Message: {}", responseData);
+        // Log the response message with masking
+        logger.info("ISO 20022 Response Message: {}", DataMaskingUtil.maskIso20022(responseData));
 
         return responseData;
     }

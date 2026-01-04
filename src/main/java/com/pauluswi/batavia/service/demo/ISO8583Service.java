@@ -1,5 +1,6 @@
 package com.pauluswi.batavia.service.demo;
 
+import com.pauluswi.batavia.util.DataMaskingUtil;
 import org.jpos.iso.ISOException;
 import org.jpos.iso.ISOMsg;
 import org.jpos.iso.packager.ISO87APackager;
@@ -15,7 +16,8 @@ public class ISO8583Service {
     /**
      * Creates an ISO 8583 request message for balance inquiry.
      *
-     * @param customerId The customer ID.
+     * @param bankAccountNumber The bank account number.
+     * @param customerFullName The customer full name.
      * @return The ISO 8583 message.
      * @throws ISOException If there is an error creating the message.
      */
@@ -32,8 +34,8 @@ public class ISO8583Service {
         isoMsg.set(102, bankAccountNumber); // Bank Account Number
         isoMsg.set(103, customerFullName); // Customer Full Name
 
-        // Log the request message
-        logger.info("ISO 8583 Request Message: {}", isoMsgToString(isoMsg));
+        // Log the request message with masking
+        logger.info("ISO 8583 Request Message: {}", DataMaskingUtil.maskIso8583Log(isoMsgToString(isoMsg)));
 
         return isoMsg;
     }
@@ -53,8 +55,8 @@ public class ISO8583Service {
         response.set(102, request.getString(102)); // Bank Account Number
         response.set(103, request.getString(103)); // Customer Full Name
 
-        // Log the response message
-        logger.info("ISO 8583 Response Message: {}", isoMsgToString(response));
+        // Log the response message with masking
+        logger.info("ISO 8583 Response Message: {}", DataMaskingUtil.maskIso8583Log(isoMsgToString(response)));
 
         return response;
     }

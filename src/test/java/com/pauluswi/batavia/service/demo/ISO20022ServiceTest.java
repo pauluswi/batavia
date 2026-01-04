@@ -3,6 +3,7 @@ package com.pauluswi.batavia.service.demo;
 import ch.qos.logback.classic.Logger;
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.core.read.ListAppender;
+import com.pauluswi.batavia.util.DataMaskingUtil;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.slf4j.LoggerFactory;
@@ -51,7 +52,10 @@ public class ISO20022ServiceTest {
         // Verify logger output
         List<ILoggingEvent> logsList = listAppender.list;
         assertEquals(1, logsList.size(), "Expected exactly one log entry.");
-        assertEquals("ISO 20022 Request Message: " + expectedXml, logsList.get(0).getFormattedMessage());
+        
+        // The log message should be masked
+        String expectedLogMessage = "ISO 20022 Request Message: " + DataMaskingUtil.maskIso20022(expectedXml);
+        assertEquals(expectedLogMessage, logsList.get(0).getFormattedMessage());
     }
 
     @Test
@@ -75,6 +79,9 @@ public class ISO20022ServiceTest {
         // Verify logger output
         List<ILoggingEvent> logsList = listAppender.list;
         assertEquals(1, logsList.size(), "Expected exactly two log entries.");
-        assertEquals("ISO 20022 Response Message: " + expectedResponseXml, logsList.get(0).getFormattedMessage());
+        
+        // The log message should be masked
+        String expectedLogMessage = "ISO 20022 Response Message: " + DataMaskingUtil.maskIso20022(expectedResponseXml);
+        assertEquals(expectedLogMessage, logsList.get(0).getFormattedMessage());
     }
 }
