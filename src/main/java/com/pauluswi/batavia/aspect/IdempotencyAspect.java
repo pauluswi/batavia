@@ -3,24 +3,26 @@ package com.pauluswi.batavia.aspect;
 import com.pauluswi.batavia.annotation.Idempotent;
 import com.pauluswi.batavia.exception.ErrorCode;
 import com.pauluswi.batavia.dto.CustomerBalanceResponseDTO;
+import com.pauluswi.batavia.service.IdempotencyService;
 import jakarta.servlet.http.HttpServletRequest;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
-
-import java.util.concurrent.ConcurrentHashMap;
 
 @Aspect
 @Component
 public class IdempotencyAspect {
 
     private static final Logger logger = LoggerFactory.getLogger(IdempotencyAspect.class);
-    private final ConcurrentHashMap<String, Object> processedRequests = new ConcurrentHashMap<>();
+    
+    @Autowired
+    private IdempotencyService idempotencyService;
 
     @Around("@annotation(idempotent)")
     public Object checkIdempotency(ProceedingJoinPoint joinPoint, Idempotent idempotent) throws Throwable {
@@ -34,7 +36,7 @@ public class IdempotencyAspect {
             return joinPoint.proceed();
         }
 
-        if (processedRequests.containsKey(requestId)) {
+        if (idempotencyService.contains(requestId)) {
             logger.info("Duplicate request detected for ID: {}", requestId);
             // Return cached response or error indicating duplicate
             // For simplicity, returning a specific error response or the cached object if we stored it
@@ -45,7 +47,7 @@ public class IdempotencyAspect {
         }
 
         Object result = joinPoint.proceed();
-        processedRequests.put(requestId, result); // In a real app, use Redis or DB with TTL
+        idempotencyService.put(requestId, result);
         return result;
     }
 }
