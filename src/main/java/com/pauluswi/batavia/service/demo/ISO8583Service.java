@@ -61,6 +61,33 @@ public class ISO8583Service {
         return response;
     }
 
+    public ISOMsg createFundTransferRequest(String sourceAccount, String destinationAccount, double amount) throws ISOException {
+        ISOMsg isoMsg = new ISOMsg();
+        isoMsg.setPackager(new ISO87APackager());
+        isoMsg.setMTI("0200");
+        isoMsg.set(3, "400000"); // Processing code for fund transfer
+        isoMsg.set(4, String.format("%012d", (long) (amount * 100))); // Transaction amount
+        isoMsg.set(7, "1111241830"); // Transmission date & time
+        isoMsg.set(11, "123457"); // System trace audit number (STAN)
+        isoMsg.set(41, "12345678"); // Card acceptor terminal ID
+        isoMsg.set(49, "360"); // Currency code
+        isoMsg.set(102, sourceAccount); // Source Account
+        isoMsg.set(103, destinationAccount); // Destination Account
+
+        logger.info("ISO 8583 Fund Transfer Request: {}", DataMaskingUtil.maskIso8583Log(isoMsgToString(isoMsg)));
+        return isoMsg;
+    }
+
+    public ISOMsg createFundTransferResponse(ISOMsg request) throws ISOException {
+        ISOMsg response = (ISOMsg) request.clone();
+        response.setMTI("0210");
+        response.set(39, "00"); // Success
+        response.set(37, "RRN123456"); // RRN
+
+        logger.info("ISO 8583 Fund Transfer Response: {}", DataMaskingUtil.maskIso8583Log(isoMsgToString(response)));
+        return response;
+    }
+
     /**
      * Converts an ISO message to a string format for logging.
      *
