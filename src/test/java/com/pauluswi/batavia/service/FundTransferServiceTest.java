@@ -3,6 +3,7 @@ package com.pauluswi.batavia.service;
 import com.pauluswi.batavia.dto.FundTransferRequestDTO;
 import com.pauluswi.batavia.dto.FundTransferResponseDTO;
 import com.pauluswi.batavia.exception.ErrorCode;
+import com.pauluswi.batavia.service.demo.ISO20022Service;
 import com.pauluswi.batavia.service.demo.ISO8583Service;
 import org.jpos.iso.ISOException;
 import org.jpos.iso.ISOMsg;
@@ -24,6 +25,9 @@ public class FundTransferServiceTest {
     @Mock
     private ISO8583Service iso8583Service;
 
+    @Mock
+    private ISO20022Service iso20022Service;
+
     @InjectMocks
     private FundTransferService fundTransferService;
 
@@ -40,23 +44,17 @@ public class FundTransferServiceTest {
     }
 
     @Test
-    public void testTransferFunds_Success() throws ISOException {
-        // Mock ISO Request
+    public void testTransferFunds_8583_Success() throws ISOException {
+        // Mock ISO 8583
         ISOMsg mockIsoRequest = new ISOMsg();
-        mockIsoRequest.setMTI("0200");
-        
-        // Mock ISO Response
         ISOMsg mockIsoResponse = new ISOMsg();
-        mockIsoResponse.setMTI("0210");
-        mockIsoResponse.set(39, "00"); // Success
+        mockIsoResponse.set(39, "00");
         mockIsoResponse.set(37, "RRN123456");
 
-        when(iso8583Service.createFundTransferRequest(anyString(), anyString(), anyDouble()))
-                .thenReturn(mockIsoRequest);
-        when(iso8583Service.createFundTransferResponse(any(ISOMsg.class)))
-                .thenReturn(mockIsoResponse);
+        when(iso8583Service.createFundTransferRequest(anyString(), anyString(), anyDouble())).thenReturn(mockIsoRequest);
+        when(iso8583Service.createFundTransferResponse(any(ISOMsg.class))).thenReturn(mockIsoResponse);
 
-        FundTransferResponseDTO response = fundTransferService.transferFunds(requestDTO);
+        FundTransferResponseDTO response = fundTransferService.transferFunds("8583", requestDTO);
 
         assertNotNull(response);
         assertEquals(ErrorCode.SUCCESS.getCode(), response.getResponseCode());
@@ -65,32 +63,35 @@ public class FundTransferServiceTest {
     }
 
     @Test
-    public void testTransferFunds_Failure() throws ISOException {
-        // Mock ISO Request
-        ISOMsg mockIsoRequest = new ISOMsg();
-        mockIsoRequest.setMTI("0200");
-        
-        // Mock ISO Response (Failure)
-        ISOMsg mockIsoResponse = new ISOMsg();
-        mockIsoResponse.setMTI("0210");
-        mockIsoResponse.set(39, "96"); // System Error
-        
-        when(iso8583Service.createFundTransferRequest(anyString(), anyString(), anyDouble()))
-                .thenReturn(mockIsoRequest);
-        when(iso8583Service.createFundTransferResponse(any(ISOMsg.class)))
-                .thenReturn(mockIsoResponse);
+    public void testTransferFunds_20022_Success() {
+        // Mock ISO 20022
+        String mockXmlRequest = "<request/>";
+        String mockXmlResponse = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><Document><FIToFIPmtStsRpt><TxInfAndSts><TxSts>ACSC</TxSts><TxId>TRX20022</TxId></TxInfAndSts></FIToFIPmtStsRpt></Document>";
 
-        FundTransferResponseDTO response = fundTransferService.transferFunds(requestDTO);
+        when(iso20022Service.buildFundTransferRequest(any(FundTransferRequestDTO.class))).thenReturn(mockXmlRequest);
+        when(iso20022Service.simulateFundTransferResponse(anyString())).thenReturn(mockXmlResponse);
+
+        FundTransferResponseDTO response = fundTransferService.transferFunds("20022", requestDTO);
 
         assertNotNull(response);
-        assertEquals("96", response.getResponseCode());
-        assertEquals("Transfer Failed", response.getMessage());
+        assertEquals(ErrorCode.SUCCESS.getCode(), response.getResponseCode());
+        assertEquals("TRX20022", response.getTransactionId());
+        assertEquals("Transfer Successful", response.getMessage());
+    }
+
+    @Test
+    public void testTransferFunds_UnsupportedProtocol() {
+        try {
+            fundTransferService.transferFunds("9999", requestDTO);
+        } catch (IllegalArgumentException e) {
+            assertEquals("Unsupported protocol: 9999", e.getMessage());
+        }
     }
 
     @Test
     public void testFallbackFundTransfer() {
         Throwable t = new RuntimeException("Simulated Timeout");
-        FundTransferResponseDTO response = fundTransferService.fallbackFundTransfer(requestDTO, t);
+        FundTransferResponseDTO response = fundTransferService.fallbackFundTransfer("8583", requestDTO, t);
 
         assertNotNull(response);
         assertEquals(ErrorCode.SYSTEM_ERROR.getCode(), response.getResponseCode());
