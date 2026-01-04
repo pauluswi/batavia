@@ -1,6 +1,7 @@
 package com.pauluswi.batavia.service;
 
 import com.pauluswi.batavia.util.DataMaskingUtil;
+import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import org.jpos.iso.ISOException;
 import org.jpos.iso.ISOMsg;
 import org.slf4j.Logger;
@@ -30,6 +31,7 @@ public class Customer8583Service {
      * @param requestDTO The customer balance inquiry request.
      * @return The customer balance response in JSON format.
      */
+    @CircuitBreaker(name = "backendA", fallbackMethod = "fallbackGetCustomerBalance")
     @Retryable(value = {ISOException.class}, maxAttempts = 3, backoff = @Backoff(delay = 1000))
     public CustomerBalanceResponseDTO getCustomerBalance(CustomerBalanceRequestDTO requestDTO) {
         logger.info("Processing balance inquiry for account: {}", DataMaskingUtil.mask(requestDTO.getBankAccountNumber()));
@@ -50,6 +52,14 @@ public class Customer8583Service {
             // To trigger retry, we should rethrow.
             throw new RuntimeException("ISO 8583 processing failed", e);
         }
+    }
+
+    public CustomerBalanceResponseDTO fallbackGetCustomerBalance(CustomerBalanceRequestDTO requestDTO, Throwable t) {
+        logger.error("Fallback triggered for account: {} due to: {}", DataMaskingUtil.mask(requestDTO.getBankAccountNumber()), t.getMessage());
+        CustomerBalanceResponseDTO responseDTO = new CustomerBalanceResponseDTO();
+        responseDTO.setResponseCode(ErrorCode.SYSTEM_ERROR.getCode());
+        // You might want to add a specific error message or code for circuit breaker open/fallback
+        return responseDTO;
     }
 
     /**
