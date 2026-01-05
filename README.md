@@ -3,6 +3,7 @@
 [![Java Version](https://img.shields.io/badge/Java-17-blue)](https://www.oracle.com/java/)
 [![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.3.5-brightgreen)](https://spring.io/projects/spring-boot)
 [![Build Java CI with Maven](https://github.com/pauluswi/batavia/actions/workflows/maven.yml/badge.svg?branch=main)](https://github.com/pauluswi/batavia/actions/workflows/maven.yml)
+[![codecov](https://codecov.io/gh/pauluswi/batavia/graph/badge.svg?token=63S7RVDOUR)](https://codecov.io/gh/pauluswi/batavia)
 [![License](https://img.shields.io/badge/license-MIT-green)](LICENSE)
 
 > A production-style banking middleware that demonstrates how modern digital channels integrate with core banking systems and payment networks using ISO 8583 and ISO 20022, designed for high-volume, 24/7 financial operations.
