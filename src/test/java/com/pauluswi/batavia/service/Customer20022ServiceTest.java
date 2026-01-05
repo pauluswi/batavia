@@ -3,62 +3,83 @@ package com.pauluswi.batavia.service;
 import com.pauluswi.batavia.dto.BalanceDataDTO;
 import com.pauluswi.batavia.dto.CustomerBalanceRequestDTO;
 import com.pauluswi.batavia.dto.CustomerBalanceResponseDTO;
-import com.pauluswi.batavia.service.demo.ISO20022ResponseParser;
+import com.pauluswi.batavia.exception.ErrorCode;
 import com.pauluswi.batavia.service.demo.ISO20022Service;
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockedStatic;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.Mockito.*;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.when;
 
+@ExtendWith(MockitoExtension.class)
 public class Customer20022ServiceTest {
 
     @Mock
     private ISO20022Service iso20022Service;
 
     @InjectMocks
-    private Customer20022Service customerBalanceService;
+    private Customer20022Service customer20022Service;
+
+    private CustomerBalanceRequestDTO requestDTO;
 
     @BeforeEach
     public void setUp() {
-        MockitoAnnotations.openMocks(this);
+        requestDTO = new CustomerBalanceRequestDTO();
+        requestDTO.setBankAccountNumber("1234567890");
+        requestDTO.setCustomerFullName("Ahmad Subarjo");
     }
 
     @Test
-    public void testGetCustomerBalance() {
+    public void testGetCustomerBalance_Success() {
         // Arrange
-        CustomerBalanceRequestDTO requestDTO = new CustomerBalanceRequestDTO();
-        requestDTO.setBankAccountNumber("1234567890");
-        requestDTO.setCustomerFullName("Ahmad Subarjo");
+        String mockXmlRequest = "<request/>";
+        // A simplified but valid XML structure for the test
+        String mockXmlResponse = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
+                "<Document>" +
+                "  <CstmrCdtTrfInitn>" +
+                "    <GrpHdr><MsgId>msg-test-123</MsgId></GrpHdr>" +
+                "    <PmtInf>" +
+                "      <DbtrAcct><Id><Othr><Id>1234567890</Id></Othr></Id></DbtrAcct>" +
+                "    </PmtInf>" +
+                "    <AcctInf><Name>Ahmad Subarjo</Name></AcctInf>" +
+                "    <Bal><Amt>1500.00</Amt></Bal>" +
+                "  </CstmrCdtTrfInitn>" +
+                "</Document>";
 
-        String iso20022Request = "<ISO20022 request XML>";
-        String iso20022Response = "<ISO20022 response XML>";
+        when(iso20022Service.buildBalanceInquiryRequest(anyString(), anyString())).thenReturn(mockXmlRequest);
+        when(iso20022Service.simulateBalanceInquiryResponse(anyString())).thenReturn(mockXmlResponse);
 
-        // Mock the methods of ISO20022Service
-        when(iso20022Service.buildBalanceInquiryRequest("1234567890", "Ahmad Subarjo")).thenReturn(iso20022Request);
-        when(iso20022Service.simulateBalanceInquiryResponse(iso20022Request)).thenReturn(iso20022Response);
+        // Act
+        CustomerBalanceResponseDTO response = customer20022Service.getCustomerBalance(requestDTO);
 
-        // Mock the static methods of ISO20022ResponseParser
-        try (MockedStatic<ISO20022ResponseParser> mockedParser = mockStatic(ISO20022ResponseParser.class)) {
-            mockedParser.when(() -> ISO20022ResponseParser.getBankAccountNumber(iso20022Response)).thenReturn("1234567890");
-            mockedParser.when(() -> ISO20022ResponseParser.getCustomerFullName(iso20022Response)).thenReturn("Ahmad Subarjo");
-            mockedParser.when(() -> ISO20022ResponseParser.getBalance(iso20022Response)).thenReturn("1500.00");
+        // Assert
+        assertNotNull(response);
+        assertEquals(ErrorCode.SUCCESS.getCode(), response.getResponseCode());
+        assertEquals("msg-test-123", response.getMTI());
 
-            // Act
-            CustomerBalanceResponseDTO responseDTO = customerBalanceService.getCustomerBalance(requestDTO);
+        BalanceDataDTO data = response.getData();
+        assertNotNull(data);
+        assertEquals("1234567890", data.getBankAccountNumber());
+        assertEquals("Ahmad Subarjo", data.getCustomerFullName());
+        assertEquals(1500.00, data.getBalance());
+    }
 
-            // Assert
-            assertEquals("00", responseDTO.getResponseCode());
-            assertEquals("msg123456", responseDTO.getMTI());
+    @Test
+    public void testFallbackGetCustomerBalance() {
+        // Arrange
+        Throwable throwable = new RuntimeException("Simulated downstream failure");
 
-            BalanceDataDTO dataDTO = responseDTO.getData();
-            assertEquals("1234567890", dataDTO.getBankAccountNumber());
-            assertEquals(1500.00, dataDTO.getBalance());
-        }
+        // Act
+        CustomerBalanceResponseDTO response = customer20022Service.fallbackGetCustomerBalance(requestDTO, throwable);
+
+        // Assert
+        assertNotNull(response);
+        assertEquals(ErrorCode.SYSTEM_ERROR.getCode(), response.getResponseCode());
     }
 }
