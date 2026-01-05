@@ -46,6 +46,15 @@ All protocol complexity is isolated inside the middleware.
 
 ---
 
+## ☁️ Cloud Deployment & Networking
+
+For a detailed guide on deploying this application to a cloud environment like AWS and handling specific networking challenges, please see:
+
+- **[AWS Cloud Deployment Guide](./CLOUD_DEPLOYMENT.md)**: Recommended architecture using ECS Fargate, CI/CD pipelines, and security best practices.
+- **[ISO 8583 Networking Guide](./ISO8583_NETWORK.md)**: Strategies for handling single, persistent TCP connections required by legacy banking switches.
+
+---
+
 ## 🛠️ Tech Stack & Implemented Features
 
 - **Language**: Java 17
@@ -88,16 +97,24 @@ All protocol complexity is isolated inside the middleware.
 ## 🚀 Implemented Production-Grade Features
 
 ### High-Volume Transaction Handling
-- **Circuit Breakers**: Implemented with **Resilience4j**. If a downstream service fails repeatedly (threshold: 50%), the circuit opens for 5 seconds, returning a fast failure instead of waiting for timeouts.
-- **Idempotency**: Implemented for state-changing operations (Fund Transfer) via an `X-Request-ID` header. The design uses an interface (`IdempotencyService`) to allow swapping the backend store (e.g., from in-memory to Redis) for horizontal scalability.
-- **Retry Mechanism**: Uses `spring-retry` to automatically retry failed operations against transient issues.
+- **Circuit Breakers**: Implemented with **Resilience4j**. If a downstream service fails repeatedly, the circuit opens, preventing the middleware from waiting on a failing service and providing an immediate fallback response.
+- **Idempotency**: Prevents duplicate processing of state-changing operations (Fund Transfer) via an `X-Request-ID` header, which is crucial in timeout and retry scenarios.
+- **Retry Mechanism**: Uses `spring-retry` to automatically retry operations against transient, short-lived failures, avoiding unnecessary error responses to the client.
+
+### Latency and Timeout Management
+- **Fail-Fast with Circuit Breakers**: The primary mechanism to manage latency is the "fail-fast" behavior of the circuit breaker. Instead of letting a request hang for a slow downstream service, the breaker opens and returns an immediate error, protecting system resources.
+- **Asynchronous Internal Processing**: For long-running processes (like ISO 8583 transactions over a slow link), the recommended architecture in the **[ISO 8583 Networking Guide](./ISO8583_NETWORK.md)** uses message queues. This allows the API to quickly accept a request and respond later via a webhook or polling, preventing long-held HTTP connections.
+- **Configurable Timeouts**: While not explicitly configured in this demo, a production setup would involve setting timeouts at multiple levels:
+  - **HTTP Client**: For calls to other microservices.
+  - **Resilience4j TimeLimiter**: To wrap any long-running call in a timeout decorator.
+  - **Database**: Connection and query timeouts.
 
 ### Security & Compliance Awareness
 - **Payload Masking**: Sensitive data in logs (Account Numbers, Names) is automatically masked (e.g., `12******90`) to comply with PII/PCI-DSS standards.
 - **Correlation & Trace IDs**: Achieved via Micrometer Tracing.
 
 ### Observability & Audit
-- **End-to-End Transaction Tracing**: Logs automatically include a **Trace ID** and **Span ID**, enabling request tracing across a distributed system.
+- **End-to-End Transaction Tracing**: Logs automatically include a **Trace ID** and **Span ID**, enabling request tracing across a distributed system. This is critical for pinpointing which service in a chain is introducing latency.
   - **Log Format**: `INFO [batavia,65b8e9f8e9f8e9f8,65b8e9f8e9f8e9f8] : Processing balance inquiry...`
 
 ---
