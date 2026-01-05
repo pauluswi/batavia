@@ -23,26 +23,9 @@ This project is **not a simulator of a specific bank**, but a **transferable ref
 
 ---
 
-## 🏗️ What This Middleware Solves
+## 🧱 Architecture
 
-### ✔ Connects Multiple Channels to Core Banking
-- Mobile & web banking
-- Partner APIs
-- Internal services
-
-Channels interact only with a **clean REST/JSON API**, never directly with core systems.
-
-### ✔ Standardizes Communication
-- REST / JSON for channels
-- ISO 8583 for legacy payment networks
-- ISO 20022 for modern real-time payments
-
-All protocol complexity is isolated inside the middleware.
-
-### ✔ Handles High-Volume Transactions Safely
-- Designed for sustained high TPS
-- Built for correctness, traceability, and stability
-- Financial safety prioritized over raw throughput
+For a detailed look into the logical components, runtime transaction flows, and physical deployment models, please see our complete **[Architecture Guide](./ARCHITECTURE.md)**.
 
 ---
 
@@ -68,29 +51,6 @@ For a detailed guide on deploying this application to a cloud environment like A
   - `spring-retry`: For automatic retry logic on transient failures.
   - `spring-boot-starter-aop`: For implementing cross-cutting concerns like idempotency.
 - **Unit Testing**: JUnit, Mockito, JaCoCo
-
----
-
-## 🧱 Architecture Overview
-
-```
-[ Channels / Clients ]
-          |
-     REST / JSON
-          |
-[ Middleware Core ]
- | Validation & Enrichment
- | Routing & Orchestration
- | Idempotency (Interface-based, scalable)
- | Circuit Breaker (Resilience4j)
- | Distributed Tracing (Micrometer)
-          |
-   -------------------
-   |                 |
-[ Mock Core ]   [ Mock Payment Networks ]
-                   | ISO 8583
-                   | ISO 20022 (pain.001, pacs.002)
-```
 
 ---
 
