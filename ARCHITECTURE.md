@@ -25,14 +25,14 @@ This diagram shows the primary components and their relationships within the mid
 |    |  Controller Layer (REST Endpoints)                      |  |
 |    |  e.g., /api/{protocol}/transfer                         |  |
 |    +---------------------------------------------------------+  |
-|                         |                                         |
+|                         |                                       |
 |    +--------------------V------------------------------------+  |
 |    |  Cross-Cutting Aspects (AOP)                            |  |
 |    |   - @Idempotent: Idempotency Check                      |  |
 |    |   - @CircuitBreaker: Resilience & Fault Tolerance       |  |
 |    |   - @Retryable: Transient Failure Handling              |  |
 |    +---------------------------------------------------------+  |
-|                         |                                         |
+|                         |                                       |
 |    +--------------------V------------------------------------+  |
 |    |  Service Layer (Business Logic)                         |  |
 |    |   - FundTransferService                                 |  |
@@ -40,7 +40,7 @@ This diagram shows the primary components and their relationships within the mid
 |    |   - Customer8583Service                                 |  |
 |    |   - Protocol Routing Logic                              |  |
 |    +---------------------------------------------------------+  |
-|                         |                                         |
+|                         |                                       |
 |    +--------------------V------------------------------------+  |
 |    |  Protocol Abstraction Layer                             |  |
 |    |   - ISO8583Service (using jpos)                         |  |
@@ -69,7 +69,7 @@ This sequence diagram illustrates the runtime flow of a **Fund Transfer** reques
 ```
 Client                Controller          IdempotencyAspect     CircuitBreaker        FundTransferService   ISO8583Service(Mock)
   |                      |                      |                      |                      |                      |
-  | POST /api/8583/transfer |                      |                      |                      |                      |
+  |POST/api/8583/transfer|                      |                      |                      |                      |
   | (with X-Request-ID)  |                      |                      |                      |                      |
   |--------------------->|                      |                      |                      |                      |
   |                      | @Idempotent          |                      |                      |                      |
@@ -96,11 +96,11 @@ Client                Controller          IdempotencyAspect     CircuitBreaker  
   |                      |                      |                      |                      |                      |      ISOMsg (Resp)   |
   |                      |                      |                      |                      |                      |<---------------------
   |                      |                      |                      |                      |                      |
-  |                      |                      |                      |      FundTransferResponseDTO     |                      |
-  |                      |                      |                      |<-------------------------------------|                      |
+  |                      |                      |                      |FundTransferResponseDTO|                     |
+  |                      |                      |                      |<---------------------|                      |
   |                      |                      |                      |                      |                      |
   |                      |                      | recordSuccess()      |                      |                      |
-  |                      |                      |<-------------------------------------|                      |
+  |                      |                      |<---------------------|                      |                      |
   |                      |                      |                      |                      |                      |
   |                      | put(requestId, resp) |                      |                      |                      |
   |                      |<---------------------|                      |                      |                      |
