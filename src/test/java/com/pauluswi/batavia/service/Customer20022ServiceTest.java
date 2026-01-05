@@ -1,5 +1,6 @@
 package com.pauluswi.batavia.service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.pauluswi.batavia.dto.BalanceDataDTO;
 import com.pauluswi.batavia.dto.CustomerBalanceRequestDTO;
 import com.pauluswi.batavia.dto.CustomerBalanceResponseDTO;
@@ -12,8 +13,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
@@ -68,6 +68,17 @@ public class Customer20022ServiceTest {
         assertEquals("1234567890", data.getBankAccountNumber());
         assertEquals("Ahmad Subarjo", data.getCustomerFullName());
         assertEquals(1500.00, data.getBalance());
+    }
+
+    @Test
+    public void testGetCustomerBalance_JsonProcessingException() {
+        String invalidXml = "<invalid";
+        when(iso20022Service.buildBalanceInquiryRequest(anyString(), anyString())).thenReturn("<request/>");
+        when(iso20022Service.simulateBalanceInquiryResponse(anyString())).thenReturn(invalidXml);
+
+        assertThrows(RuntimeException.class, () -> {
+            customer20022Service.getCustomerBalance(requestDTO);
+        });
     }
 
     @Test

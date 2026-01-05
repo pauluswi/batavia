@@ -14,8 +14,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.when;
 
@@ -63,6 +62,15 @@ public class FundTransferServiceTest {
     }
 
     @Test
+    public void testTransferFunds_8583_Failure() throws ISOException {
+        when(iso8583Service.createFundTransferRequest(anyString(), anyString(), anyDouble())).thenThrow(new ISOException("Test Failure"));
+
+        assertThrows(RuntimeException.class, () -> {
+            fundTransferService.transferFunds("8583", requestDTO);
+        });
+    }
+
+    @Test
     public void testTransferFunds_20022_Success() {
         // Mock ISO 20022
         String mockXmlRequest = "<request/>";
@@ -78,14 +86,21 @@ public class FundTransferServiceTest {
         assertEquals("TRX20022", response.getTransactionId());
         assertEquals("Transfer Successful", response.getMessage());
     }
+    
+    @Test
+    public void testTransferFunds_20022_Failure() {
+        when(iso20022Service.buildFundTransferRequest(any(FundTransferRequestDTO.class))).thenThrow(new RuntimeException("Test Failure"));
+
+        assertThrows(RuntimeException.class, () -> {
+            fundTransferService.transferFunds("20022", requestDTO);
+        });
+    }
 
     @Test
     public void testTransferFunds_UnsupportedProtocol() {
-        try {
+        assertThrows(IllegalArgumentException.class, () -> {
             fundTransferService.transferFunds("9999", requestDTO);
-        } catch (IllegalArgumentException e) {
-            assertEquals("Unsupported protocol: 9999", e.getMessage());
-        }
+        });
     }
 
     @Test

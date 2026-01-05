@@ -14,6 +14,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -96,5 +97,18 @@ public class CustomerControllerTest {
                 .andExpect(jsonPath("$.data.bankAccountNumber").value("1234567890"))
                 .andExpect(jsonPath("$.data.customerFullName").value("Ahmad Subarjo"))
                 .andExpect(jsonPath("$.data.balance").value(1500.00));
+    }
+
+    @Test
+    public void testGetCustomerBalance_UnsupportedProtocol() throws Exception {
+        CustomerBalanceRequestDTO requestDTO = new CustomerBalanceRequestDTO();
+        requestDTO.setBankAccountNumber("1234567890");
+
+        mockMvc.perform(post("/api/9999/customer/balance")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(requestDTO)))
+                .andExpect(status().isInternalServerError())
+                .andExpect(result -> assertTrue(result.getResolvedException() instanceof IllegalArgumentException))
+                .andExpect(result -> assertTrue(result.getResolvedException().getMessage().contains("Unsupported protocol: 9999")));
     }
 }
