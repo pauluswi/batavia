@@ -4,42 +4,41 @@
 Accepted
 
 ## Context
-The Batavia middleware needs to integrate with legacy banking switches and core systems using the ISO 8583 protocol. These legacy systems typically impose strict networking constraints:
-1.  **Single Persistent TCP Connection**: The switch expects exactly one long-lived TCP connection.
-2.  **Static IP Whitelisting**: Connections must originate from a specific, static IP address.
-3.  **Stateful Protocol**: ISO 8583 relies on sign-on/echo messages to maintain link state.
+Legacy banking switches and core systems often require a single, persistent TCP connection for ISO 8583 communication, along with static IP whitelisting. This poses a significant challenge for cloud-native deployments (e.g., AWS ECS Fargate) which are designed for horizontal scalability, ephemerality, and dynamic IP addressing. Directly connecting multiple instances of the Batavia middleware to such a switch would lead to connection rejections, port exhaustion, or system instability.
 
-Modern cloud-native architectures, such as AWS ECS Fargate, are designed for horizontal scalability, ephemerality, and dynamic IP assignments. Directly connecting multiple instances of the Batavia middleware to a single ISO 8583 switch would lead to:
-- Connection rejections or bans from the legacy switch.
-- Inability to scale the middleware horizontally without violating the single connection constraint.
-- Operational complexity in managing static IPs for dynamic containers.
+The Batavia middleware aims to be highly scalable and resilient, but must integrate with these legacy constraints.
 
 ## Decision
-To reconcile the scalability requirements of the Batavia middleware with the constraints of legacy ISO 8583 systems, we adopt the **"Connector Pattern"**.
+To reconcile the scalability requirements of the middleware with the single-connection constraint of legacy ISO 8583 systems, we will adopt the **"Connector Pattern"**.
 
 This pattern involves:
-1.  **Decoupling**: Separating the stateless, horizontally scalable API layer (the main Batavia application) from a stateful, singleton "ISO 8583 Connector" service.
-2.  **Asynchronous Communication**: The main Batavia application will communicate with the ISO 8583 Connector via a message broker (e.g., Redis Pub/Sub or AWS SQS). Requests will be published to a request queue, and responses will be consumed from a response channel, using correlation IDs for matching.
-3.  **Singleton Connector**: The ISO 8583 Connector will be deployed as a single instance (e.g., on AWS ECS Fargate with `desiredCount: 1`).
-4.  **Static IP**: The Connector's outbound traffic will be routed through a NAT Gateway with a static Elastic IP, which can be whitelisted by the legacy switch.
-5.  **Connection Management**: The Connector will be responsible for establishing, maintaining, and re-establishing the single persistent TCP connection, including handling ISO 8583 specific link management messages (e.g., 0800 echo/sign-on).
+1.  **Decoupling**: Separating the stateless, horizontally scalable API layer of the Batavia middleware from a stateful, singleton ISO 8583 "Connector" service.
+2.  **Asynchronous Communication**: Using a message broker (e.g., Redis Pub/Sub or Amazon SQS) to facilitate asynchronous communication between the scalable API layer and the singleton Connector.
+3.  **Dedicated Connector Service**: A separate, lightweight service (the "Connector") will be responsible for:
+    *   Maintaining the single, persistent TCP connection to the legacy ISO 8583 switch.
+    *   Handling ISO 8583 specific protocols (e.g., sign-on/echo messages).
+    *   Managing connection lifecycle (reconnection on failure).
+    *   Routing all outbound ISO 8583 traffic from the API layer to the switch.
+    *   Receiving responses from the switch and routing them back to the API layer via the message broker.
+4.  **Static IP**: The Connector service will be deployed in a private subnet, with its outbound traffic routed through an AWS NAT Gateway assigned a static Elastic IP, which can then be whitelisted by the legacy switch.
 
 ## Consequences
 
 ### Positive
-- **Scalability**: The main Batavia API can scale horizontally without impacting the ISO 8583 connection.
-- **Resilience**: Isolates the complexity and fragility of the legacy connection into a dedicated, managed component. Failures in the Connector do not directly bring down the entire API.
-- **Maintainability**: Clear separation of concerns. The Connector can be updated or managed independently.
-- **Compliance**: Easier to manage static IP requirements for whitelisting.
+*   **Scalability**: The main Batavia API layer can scale horizontally (1 to N instances) without being constrained by the ISO 8583 connection limit.
+*   **Resilience**: Isolates the complexity and fragility of the stateful TCP connection into a dedicated, manageable component. Failures in the API layer do not directly impact the ISO connection, and vice-versa.
+*   **Maintainability**: Clear separation of concerns. The Connector service can be optimized and managed specifically for its networking role.
+*   **Cloud-Native Alignment**: Enables the core middleware to fully leverage cloud benefits like Fargate's serverless compute and auto-scaling.
+*   **Compliance**: Provides a clear, controlled egress point for static IP whitelisting.
 
 ### Negative
-- **Increased Complexity**: Introduces an additional service (the Connector) and a message broker, increasing the overall system's architectural complexity.
-- **Asynchronous Flow**: Transforms a synchronous client request into an asynchronous internal flow, requiring careful handling of timeouts and response correlation.
-- **Deployment Overhead**: Requires deploying and managing two distinct services (API and Connector).
-- **Brief Downtime on Connector Deployment**: Deploying a new version of the Connector will briefly interrupt ISO 8583 transactions as the single connection is re-established.
+*   **Increased Complexity**: Introduces an additional service (the Connector) and a message broker, increasing the overall architectural complexity and operational overhead.
+*   **Asynchronous Nature**: Transforms a potentially synchronous request (from the client's perspective) into an asynchronous internal flow, requiring careful handling of timeouts and response correlation.
+*   **Deployment Downtime**: Deployments of the Connector service will cause a brief interruption (seconds) to ISO 8583 transaction processing as the single TCP connection is re-established.
+*   **Additional Cost**: The message broker and NAT Gateway incur additional AWS costs.
 
 ## Alternatives Considered
-- **Leader Election**: Deploying the same codebase to multiple instances, with one instance elected as a "leader" to manage the TCP connection.
-    - *Rejected because*: Adds significant complexity to the application logic for leader election, failover, and inter-instance communication, which is harder to manage and debug than a dedicated connector service.
-- **Direct Connection with Static IPs (non-scalable)**: Deploying a single instance of the Batavia application with a static IP.
-    - *Rejected because*: Violates horizontal scalability requirements and introduces a single point of failure for the entire middleware.
+*   **Leader Election**: Deploying the full Batavia application on multiple instances, with one instance elected as a "leader" to manage the ISO 8583 connection.
+    *   *Rejected*: While reducing the number of deployable artifacts, it adds significant complexity to the application logic for leader election, failover, and inter-instance communication, which was deemed less robust and harder to manage than a dedicated Connector service.
+*   **Direct Connection with IP Whitelisting per Instance**: Attempting to whitelist multiple dynamic IPs for each middleware instance.
+    *   *Rejected*: Not feasible with legacy switches that expect a single source IP. Also, dynamic IPs of containers make whitelisting impractical.
