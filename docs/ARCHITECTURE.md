@@ -170,6 +170,64 @@ Rel(iso8583_connector, legacy_switch, "Maintains single connection and sends/rec
 @enduml
 ```
 
+### 4.3. C4 Component Diagram (Batavia API Container)
+This diagram illustrates the internal components of the `Batavia API` Spring Boot application, showing how they collaborate to fulfill the middleware's responsibilities.
+
+```plantuml
+@startuml
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Component.puml
+
+title C4 Component Diagram for Batavia API Container
+
+Container(batavia_api, "Batavia API", "Spring Boot Application (Java 17)", "Provides RESTful API for digital channels. Handles routing, idempotency, resilience, and protocol mapping.") {
+
+    Component(customer_controller, "CustomerController", "Spring @RestController", "Handles customer-related REST API requests (e.g., balance inquiry).")
+    Component(fund_transfer_controller, "FundTransferController", "Spring @RestController", "Handles fund transfer REST API requests.")
+
+    Component(idempotency_aspect, "IdempotencyAspect", "Spring @Aspect", "Intercepts requests to enforce idempotency using X-Request-ID header.")
+    Component(circuit_breaker_aspect, "CircuitBreakerAspect", "Spring @Aspect (Resilience4j)", "Applies circuit breaker patterns to service calls for resilience.")
+    Component(retry_aspect, "RetryAspect", "Spring @Aspect (Spring Retry)", "Applies retry logic to service calls for transient fault handling.")
+
+    Component(fund_transfer_service, "FundTransferService", "Spring @Service", "Orchestrates fund transfer business logic, routes to appropriate ISO service.")
+    Component(customer_8583_service, "Customer8583Service", "Spring @Service", "Handles customer balance inquiries via ISO 8583 protocol.")
+    Component(customer_20022_service, "Spring @Service", "Handles customer balance inquiries via ISO 20022 protocol.")
+    Component(idempotency_service, "IdempotencyService", "Spring @Service", "Interface for idempotency store operations (e.g., InMemoryIdempotencyService).")
+
+    Component(iso8583_adapter, "ISO8583Service", "Spring @Service", "Adapts internal DTOs to ISO 8583 messages and interacts with the ISO 8583 Connector.")
+    Component(iso20022_adapter, "ISO20022Service", "Spring @Service", "Adapts internal DTOs to ISO 20022 messages and interacts with the ISO 20022 Payment Engine.")
+
+    Rel(customer_controller, customer_8583_service, "Uses", "Java API")
+    Rel(customer_controller, customer_20022_service, "Uses", "Java API")
+    Rel(fund_transfer_controller, fund_transfer_service, "Uses", "Java API")
+
+    Rel(customer_8583_service, iso8583_adapter, "Uses", "Java API")
+    Rel(customer_20022_service, iso20022_adapter, "Uses", "Java API")
+    Rel(fund_transfer_service, iso8583_adapter, "Uses", "Java API")
+    Rel(fund_transfer_service, iso20022_adapter, "Uses", "Java API")
+
+    Rel(idempotency_aspect, idempotency_service, "Uses", "Java API")
+
+    Rel_U(customer_controller, idempotency_aspect, "Applies to", "AOP")
+    Rel_U(fund_transfer_controller, idempotency_aspect, "Applies to", "AOP")
+    Rel_U(fund_transfer_service, circuit_breaker_aspect, "Applies to", "AOP")
+    Rel_U(customer_8583_service, circuit_breaker_aspect, "Applies to", "AOP")
+    Rel_U(customer_20022_service, circuit_breaker_aspect, "Applies to", "AOP")
+    Rel_U(fund_transfer_service, retry_aspect, "Applies to", "AOP")
+    Rel_U(customer_8583_service, retry_aspect, "Applies to", "AOP")
+    Rel_U(customer_20022_service, retry_aspect, "Applies to", "AOP")
+}
+
+Container_Ext(redis, "Redis", "Distributed Cache/Message Broker")
+Container_Ext(iso8583_connector, "ISO 8583 Connector", "Spring Boot Application")
+System_Ext(iso20022_engine, "ISO 20022 Payment Engine", "External System")
+
+Rel(iso8583_adapter, iso8583_connector, "Sends/Receives ISO 8583 messages via", "Redis/SQS")
+Rel(iso20022_adapter, iso20022_engine, "Sends/Receives ISO 20022 messages", "HTTP/XML")
+Rel(idempotency_service, redis, "Stores/Retrieves idempotency keys and responses", "TCP")
+
+@enduml
+```
+
 ---
 
 ## 5. Runtime View (C4 Model: Sequence Diagram)
@@ -240,7 +298,7 @@ sequenceDiagram
 4.  **Service Logic**: The `FundTransferService` is invoked, routing the request based on the specified `protocol`.
 5.  **Protocol Mapping & Downstream Call**:
     - **ISO 8583**: The `ISO8583Service` constructs the ISO message, which is then sent to the `DownstreamSystem` (mocked switch). The response is received and parsed.
-    - **ISO 20022**: The `ISO20022Service` constructs the ISO 20022 XML message, which is sent to the `DownstreamSystem` (mocked payment engine). The response is received and parsed.
+    - **ISO 20022**: The `ISO20022Service` constructs the ISO 20022 XML message, which is then sent to the `DownstreamSystem` (mocked payment engine). The response is received and parsed.
 6.  **Response Handling**: The `FundTransferService` processes the protocol-specific response and maps it to a `FundTransferResponseDTO`.
 7.  **Aspects (Post-Execution)**:
     - The `CircuitBreaker` records the outcome (success/failure) to update its state.
@@ -258,42 +316,58 @@ For a detailed guide on the recommended AWS deployment architecture, including i
 ### Handling ISO 8583 Single TCP Connection in Cloud
 A critical aspect of the deployment view, especially for ISO 8583 integration, is managing the single, persistent TCP connection requirement of legacy systems. This is addressed using the "Connector Pattern". For a comprehensive explanation of this pattern and its implementation, refer to the **[ISO 8583 Networking Guide](./ISO8583_NETWORK.md)**.
 
+```plantuml
+@startuml
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Deployment.puml
+
+title C4 Deployment Diagram for Batavia Middleware (AWS ECS Fargate)
+
+Deployment_Node("AWS Region", "us-east-1") {
+    Deployment_Node("VPC", "Virtual Private Cloud") {
+
+        Deployment_Node("Public Subnets", "Contain internet-facing resources") {
+            Deployment_Node("Application Load Balancer (ALB)", "Entry point for HTTP/S traffic") {
+                Container(alb_listener, "ALB Listener", "HTTPS (443)", "Routes traffic to Batavia API")
+            }
+            Deployment_Node("NAT Gateway", "Provides static egress IP for private subnets") {
+                Component(nat_eip, "Elastic IP", "Static Public IP", "Whitelisted by Legacy ISO 8583 Switch")
+            }
+        }
+
+        Deployment_Node("Private Subnets", "Contain application and data resources") {
+            Deployment_Node("ECS Cluster", "ECS Fargate Cluster") {
+                Deployment_Node("ECS Service (Batavia API)", "Scalable Service (N instances)") {
+                    Container(batavia_api_instance, "Batavia API Instance", "Spring Boot App", "Handles REST, Idempotency, Protocol Mapping")
+                    Container(batavia_api_instance_2, "Batavia API Instance", "Spring Boot App", "...")
+                    ' ... N instances
+                }
+                Deployment_Node("ECS Service (ISO 8583 Connector)", "Singleton Service (1 instance)") {
+                    Container(iso8583_connector_instance, "ISO 8583 Connector Instance", "Spring Boot App", "Manages single TCP connection to Legacy Switch")
+                }
+            }
+            Deployment_Node("Redis (ElastiCache)", "Managed Redis Cluster") {
+                Container(redis_cluster, "Redis Cluster", "Distributed Cache/Message Broker", "Idempotency Store, ISO 8583 Message Queue")
+            }
+        }
+    }
+}
+
+System_Ext(legacy_switch, "Legacy ISO 8583 Switch", "External banking system requiring single TCP connection from static IP.")
+System_Ext(iso20022_engine, "ISO 20022 Payment Engine", "External real-time payment system (HTTP/XML).")
+
+Rel(alb_listener, batavia_api_instance, "Routes HTTP/S traffic to", "HTTPS")
+Rel(batavia_api_instance, redis_cluster, "Reads/Writes idempotency data, Publishes ISO 8583 requests", "TCP")
+Rel(iso8583_connector_instance, redis_cluster, "Subscribes to ISO 8583 requests, Publishes responses", "TCP")
+Rel(iso8583_connector_instance, nat_eip, "Routes outbound traffic through", "TCP")
+Rel(nat_eip, legacy_switch, "Connects to", "ISO 8583 (TCP/IP)")
+Rel(batavia_api_instance, iso20022_engine, "Communicates with", "ISO 20022 (HTTP/XML)")
+
+@enduml
+```
+
 ---
 
-## 7. Crosscutting Concerns
-
-### 7.1. Resilience & Fault Tolerance
-- **Circuit Breakers**: Implemented with **Resilience4j**. If a downstream service fails repeatedly, the circuit opens, preventing the middleware from waiting on a failing service and providing an immediate fallback response.
-- **Retry Mechanism**: Uses `spring-retry` to automatically retry operations against transient, short-lived failures, avoiding unnecessary error responses to the client.
-- **Idempotency**: Prevents duplicate processing of state-changing operations (Fund Transfer) via an `X-Request-ID` header, which is crucial in timeout and retry scenarios. The design uses an interface (`IdempotencyService`) to allow swapping the backend store (e.g., from in-memory to Redis) for horizontal scalability.
-
-### 7.2. Latency and Timeout Management
-- **Fail-Fast with Circuit Breakers**: The primary mechanism to manage latency is the "fail-fast" behavior of the circuit breaker. Instead of letting a request hang for a slow downstream service, the breaker opens and returns an immediate error, protecting system resources.
-- **Asynchronous Internal Processing**: For long-running processes (like ISO 8583 transactions over a slow link), the recommended architecture in the **[ISO 8583 Networking Guide](./ISO8583_NETWORK.md)** uses message queues. This allows the API to quickly accept a request and respond later via a webhook or polling, preventing long-held HTTP connections.
-- **Configurable Timeouts**: While not explicitly configured in this demo, a production setup would involve setting timeouts at multiple levels:
-  - **HTTP Client**: For calls to other microservices.
-  - **Resilience4j TimeLimiter**: To wrap any long-running call in a timeout decorator.
-  - **Database**: Connection and query timeouts.
-
-### 7.3. Security & Compliance
-- **Payload Masking**: Sensitive data in logs (Account Numbers, Names) is automatically masked (e.g., `12******90`) to comply with PII/PCI-DSS standards.
-- **TLS-first communication**: All external REST/JSON communication is expected to be over HTTPS.
-- **Structured audit logging**: Logs are structured to facilitate auditing and reconciliation.
-- **Role-based access concepts**: While simplified, the design supports integration with external authorization mechanisms.
-
-### 7.4. Observability & Audit
-- **End-to-End Transaction Tracing**: Logs automatically include a **Trace ID** and **Span ID** (via Micrometer Tracing), enabling request tracing across a distributed system. This is critical for pinpointing which service in a chain is introducing latency.
-- **Deterministic transaction states**: Designed for clear and traceable transaction states.
-- **Structured logs**: For audit and reconciliation purposes.
-- **Clear error classification**: Facilitates quick issue resolution.
-
-### 7.5. Scalability
-- **Horizontal Scaling**: The API layer is stateless, allowing for easy horizontal scaling of the Spring Boot application instances.
-- **Idempotency Store**: The `IdempotencyService` is designed with an interface, allowing the in-memory store to be replaced with a distributed store (e.g., Redis) for true horizontal scalability.
-
----
-
-## 8. Architectural Decisions (ADRs)
+## 7. Architectural Decisions (ADRs)
 
 Key architectural decisions are documented as Architectural Decision Records (ADRs). These provide context, alternatives considered, and the rationale behind significant design choices.
 
@@ -301,7 +375,7 @@ Key architectural decisions are documented as Architectural Decision Records (AD
 
 ---
 
-## 9. Quality Requirements
+## 8. Quality Requirements
 
 The following non-functional requirements are critical for the Batavia middleware:
 - **Performance**: Designed for sustained high TPS.
@@ -312,7 +386,7 @@ The following non-functional requirements are critical for the Batavia middlewar
 
 ---
 
-## 10. Risks and Technical Debts
+## 9. Risks and Technical Debts
 
 - **Mocked External Systems**: All core banking and payment networks are mocked. Real integration would introduce complexities not covered in this showcase.
 - **In-Memory Idempotency Store**: The current `InMemoryIdempotencyService` is not suitable for horizontally scaled production environments. It should be replaced with a distributed store (e.g., Redis) for true scalability.
@@ -329,7 +403,7 @@ The following non-functional requirements are critical for the Batavia middlewar
 - **ECS**: Elastic Container Service
 - **EIP**: Elastic IP
 - **EOD**: End-of-Day
-- **HTTPS**: Hypertext Transfer Protocol Secure
+- **HTTPS**: Hypertext Transfer Protocol Protocol Secure
 - **ISO 8583**: International Organization for Standardization 8583 (Financial transaction card originated messages)
 - **ISO 20022**: International Organization for Standardization 20022 (Universal financial industry message scheme)
 - **MTI**: Message Type Indicator (ISO 8583)
